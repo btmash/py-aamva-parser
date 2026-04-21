@@ -35,3 +35,8 @@ jobs:
 
       - name: Pytest
         run: pytest
+
+      - name: Build and check distribution
+        run: |
+          python -m build
+          twine check --strict dist/*
