@@ -1,0 +1,43 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aamva-parser"
+version = "0.1.0"
+description = "Parse AAMVA PDF417 barcode data from US and Canadian driver's licenses and ID cards (Python port of aamva-parser)."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "ISC" }
+authors = [{ name = "Ashok Modi" }]
+maintainers = [{ name = "btmash" }]
+keywords = ["aamva", "pdf417", "barcode", "driver-license", "usdl", "id-parser"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: ISC License (ISCL)",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://github.com/btmash/py-aamva-parser"
+Repository = "https://github.com/btmash/py-aamva-parser"
+Issues = "https://github.com/btmash/py-aamva-parser/issues"
+"GitHub profile" = "https://github.com/btmash"
+Upstream = "https://github.com/joptimus/aamva-parser"
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+aamva_parser = ["py.typed"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
