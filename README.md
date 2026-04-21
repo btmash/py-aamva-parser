@@ -48,7 +48,7 @@ At runtime, `isinstance(lic, License)` and `isinstance(lic, ParsedLicense)` are 
 
 The **PyPI / pip name** is `aamva-parser` (hyphen). The **import name** is `aamva_parser` (underscore): `import aamva_parser` or `from aamva_parser import parse`.
 
-**From PyPI** (when published):
+**From PyPI:**
 
 ```bash
 pip install aamva-parser
@@ -62,6 +62,14 @@ pip install -e ".[dev]"   # editable, with dev dependencies
 ```
 
 The importable package name is **`aamva_parser`** (underscore).
+
+## Publishing to PyPI
+
+Creating a [GitHub Release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) runs **Publish to PyPI** (`.github/workflows/publish.yml`), which builds the sdist and wheel and uploads them with [OIDC trusted publishing](https://docs.pypi.org/trusted-publishers/).
+
+One-time PyPI setup for the **aamva-parser** project: **Manage** → **Publishing** → add a trusted publisher for this repository, workflow `publish.yml`, and environment **`pypi`** (the name used in the workflow).
+
+For a manual upload: `pip install build twine`, then `python -m build` and `twine upload dist/*`.
 
 ### Poetry
 
@@ -84,7 +92,7 @@ poetry install -E dev
 poetry run pytest
 ```
 
-Use `poetry shell` to activate the environment, then run commands without `poetry run`. The `-E dev` flag installs the optional **`dev`** extra from `pyproject.toml` (currently `pytest`).
+Use `poetry shell` to activate the environment, then run commands without `poetry run`. The `-E dev` flag installs the optional **`dev`** extra from `pyproject.toml` (development tools such as `pytest`, `ruff`, `mypy`, `build`, and `twine`).
 
 After dependency changes, run `poetry lock`. Commit `poetry.lock` if you want reproducible installs for Poetry users.
 
