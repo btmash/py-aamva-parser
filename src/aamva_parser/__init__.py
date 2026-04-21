@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from datetime import date
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as _distribution_version
 
 from aamva_parser.enums import (
     EyeColor,
@@ -27,6 +29,7 @@ __all__ = [
     "Parse",
     "ParsedLicense",
     "Truncation",
+    "__version__",
     "get_age",
     "get_full_name",
     "get_state",
@@ -95,3 +98,9 @@ def is_cdl(barcode: str) -> bool:
 
 # Deprecated PascalCase aliases (JavaScript parity); prefer snake_case above.
 from aamva_parser.compat import GetVersion, IsExpired, Parse
+
+try:
+    __version__: str = _distribution_version("aamva-parser")
+except PackageNotFoundError:
+    # Editable checkout without metadata, or tests on PYTHONPATH without install.
+    __version__ = "0.dev0"

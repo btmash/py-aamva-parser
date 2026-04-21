@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=77"]
+requires = ["setuptools>=77", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "aamva-parser"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Parse AAMVA PDF417 barcode data from US and Canadian driver's licenses and ID cards (Python port of aamva-parser)."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -37,6 +37,10 @@ dev = ["build>=1.2", "mypy>=1.8", "pytest>=7.0", "ruff>=0.8", "twine>=5.0"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools_scm]
+# Omit +g<hash>.d<date> so dev wheels pass strict PyPI checks in CI; tags still yield e.g. 0.2.0.
+local_scheme = "no-local-version"
 
 [tool.setuptools.package-data]
 aamva_parser = ["py.typed"]

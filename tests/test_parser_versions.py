@@ -1,4 +1,5 @@
 from aamva_parser import get_version, parse
+from aamva_parser.parser import LicenseParser
 
 V11_DATA = """
 @
@@ -74,3 +75,10 @@ def test_parse_v12_cds_fields() -> None:
     assert lic.non_domiciled_indicator is None
     assert lic.permit_indicator is None
     assert lic.postal_code == "77001"
+
+
+def test_license_parser_initial_field_parser_uses_normalized_payload() -> None:
+    """FieldParser must see the same cleaned string as parse_version / parse (not raw input)."""
+    messy = "\u001e\r\n\n" + V11_DATA.strip() + "\n\r\n"
+    parser = LicenseParser(messy)
+    assert parser.field_parser.data == parser.data
