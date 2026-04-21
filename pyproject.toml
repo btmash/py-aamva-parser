@@ -35,6 +35,9 @@ Upstream = "https://github.com/joptimus/aamva-parser"
 [project.optional-dependencies]
 dev = ["build>=1.2", "mypy>=1.8", "pytest>=7.0", "ruff>=0.8", "twine>=5.0"]
 
+[tool.poetry]
+package-mode = false
+
 [tool.setuptools.packages.find]
 where = ["src"]
 
