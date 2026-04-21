@@ -1,5 +1,7 @@
 from datetime import datetime
 
+import pytest
+
 from aamva_parser.enums import (
     EyeColor,
     Gender,
@@ -93,3 +95,8 @@ def test_cds_defaults_null() -> None:
     assert lic.non_domiciled_indicator is None
     assert lic.enhanced_credential_indicator is None
     assert lic.permit_indicator is None
+
+
+def test_from_dict_rejects_unknown_keys() -> None:
+    with pytest.raises(TypeError, match="Unknown fields"):
+        License.from_dict({"first_name": "x", "not_a_field": 1})

@@ -1,14 +1,14 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from copy import copy
 from typing import Protocol
 
 
 class FieldMapping(Protocol):
-    fields: dict[str, str]
+    """Maps logical field names to AAMVA element ids (``field_for`` contract)."""
 
-    def field_for(self, key: str) -> str:
-        ...
+    def field_for(self, key: str) -> str: ...
 
 
 class FieldMapper:
@@ -48,7 +48,7 @@ class FieldMapper:
         }
 
     @property
-    def fields(self) -> dict[str, str]:
+    def fields(self) -> Mapping[str, str]:
         return self._fields
 
     @fields.setter

@@ -4,25 +4,27 @@ from datetime import datetime
 
 from aamva_parser.field_parser import FieldParser
 from aamva_parser.license import License
+from aamva_parser.parsed_license import ParsedLicense
 from aamva_parser.regex_util import Regex
 from aamva_parser.version_field_parsers import (
     VersionEightFieldParser,
     VersionElevenFieldParser,
+    VersionFiveFieldParser,
+    VersionFourFieldParser,
     VersionNineFieldParser,
     VersionOneFieldParser,
     VersionSevenFieldParser,
     VersionSixFieldParser,
     VersionTenFieldParser,
-    VersionTwelveFieldParser,
     VersionThreeFieldParser,
+    VersionTwelveFieldParser,
     VersionTwoFieldParser,
-    VersionFourFieldParser,
-    VersionFiveFieldParser,
 )
 
 
 class LicenseParser:
     def __init__(self, data: str) -> None:
+        self._regex = Regex()
         self.data = self._clean_and_format_string(data)
         self.field_parser: FieldParser = FieldParser(data)
 
@@ -35,11 +37,11 @@ class LicenseParser:
             data = "@\n" + data
         return data
 
-    def parse(self) -> License:
+    def parse(self) -> ParsedLicense:
         version = self.parse_version()
         self.field_parser = self._version_based_field_parsing(version)
 
-        license_data: dict = {
+        license_data: dict[str, object] = {
             "first_name": self.field_parser.parse_first_name(),
             "last_name": self.field_parser.parse_last_name(),
             "middle_name": self.field_parser.parse_middle_name(),
@@ -56,10 +58,18 @@ class LicenseParser:
             "drivers_license_id": self.field_parser.parse_string("drivers_license_id"),
             "document_id": self.field_parser.parse_string("document_id"),
             "country": self.field_parser.parse_country(),
-            "middle_name_truncation": self.field_parser.parse_truncation_status("middle_name_truncation"),
-            "first_name_truncation": self.field_parser.parse_truncation_status("first_name_truncation"),
-            "last_name_truncation": self.field_parser.parse_truncation_status("last_name_truncation"),
-            "street_address_supplement": self.field_parser.parse_string("street_address_supplement"),
+            "middle_name_truncation": self.field_parser.parse_truncation_status(
+                "middle_name_truncation"
+            ),
+            "first_name_truncation": self.field_parser.parse_truncation_status(
+                "first_name_truncation"
+            ),
+            "last_name_truncation": self.field_parser.parse_truncation_status(
+                "last_name_truncation"
+            ),
+            "street_address_supplement": self.field_parser.parse_string(
+                "street_address_supplement"
+            ),
             "hair_color": self.field_parser.parse_hair_color(),
             "place_of_birth": self.field_parser.parse_string("place_of_birth"),
             "audit_information": self.field_parser.parse_string("audit_information"),
@@ -74,14 +84,16 @@ class LicenseParser:
             "weight": self.field_parser.parse_string("weight"),
             "cdl_indicator": self.field_parser.parse_string("cdl_indicator"),
             "non_domiciled_indicator": self.field_parser.parse_string("non_domiciled_indicator"),
-            "enhanced_credential_indicator": self.field_parser.parse_string("enhanced_credential_indicator"),
+            "enhanced_credential_indicator": self.field_parser.parse_string(
+                "enhanced_credential_indicator"
+            ),
             "permit_indicator": self.field_parser.parse_string("permit_indicator"),
         }
 
         return License.from_dict(license_data)
 
     def parse_version(self) -> str | None:
-        return Regex().first_match(r"\d{6}(\d{2})\w+", self.data)
+        return self._regex.first_match(r"\d{6}(\d{2})\w+", self.data)
 
     def _version_based_field_parsing(self, version: str | None) -> FieldParser:
         default_parser = FieldParser(self.data)

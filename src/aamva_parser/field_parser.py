@@ -3,7 +3,14 @@ from __future__ import annotations
 from datetime import datetime
 from re import escape as re_escape
 
-from aamva_parser.enums import EyeColor, Gender, HairColor, IssuingCountry, NameSuffix, Truncation
+from aamva_parser.enums import (
+    EyeColor,
+    Gender,
+    HairColor,
+    IssuingCountry,
+    NameSuffix,
+    Truncation,
+)
 from aamva_parser.field_mapping import FieldMapper, FieldMapping
 from aamva_parser.regex_util import Regex
 

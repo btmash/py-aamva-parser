@@ -1,0 +1,38 @@
+from aamva_parser.field_mapping import FieldMapper
+from aamva_parser.field_parser import FieldParser
+
+DATA_V9 = """@
+\u001e\rANSI 636015090002DL00410280ZT03210007DLDCAC
+DCBNONE
+DCDNONE
+DBA10232031
+DCSLEWANDOWSKI
+DDEN
+DACJAMES
+DDFN
+DADCLAIR
+DDGN
+DBD11062023
+DBB10231986
+DBC1
+DAYHAZ
+DAU077 in
+DAG8830 HIDDEN POND ST
+DAINORTHLAKE
+DAJTX
+DAK762470000
+DAQ42145201
+DCF00121301114026256231
+DCGUSA
+DAZBRO
+DCK10022062600
+DCLWO
+DDAF
+DDB07162021
+DAW350
+\rZTZTAN\r"""
+
+
+def test_parse_string_state() -> None:
+    parser = FieldParser(DATA_V9, FieldMapper())
+    assert parser.parse_string("state") == "TX"

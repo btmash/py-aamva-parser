@@ -1,20 +1,20 @@
 from __future__ import annotations
 
-from aamva_parser.field_parser import FieldParser, suffix_to_enum
 from aamva_parser.enums import NameSuffix
+from aamva_parser.field_parser import FieldParser, suffix_to_enum
 from aamva_parser.version_mappers import (
     VersionEightFieldMapper,
     VersionElevenFieldMapper,
+    VersionFiveFieldMapper,
+    VersionFourFieldMapper,
     VersionNineFieldMapper,
     VersionOneFieldMapper,
     VersionSevenFieldMapper,
     VersionSixFieldMapper,
     VersionTenFieldMapper,
-    VersionTwelveFieldMapper,
     VersionThreeFieldMapper,
+    VersionTwelveFieldMapper,
     VersionTwoFieldMapper,
-    VersionFourFieldMapper,
-    VersionFiveFieldMapper,
 )
 
 
