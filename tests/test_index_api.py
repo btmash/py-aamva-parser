@@ -4,6 +4,7 @@ from aamva_parser import (
     GetVersion,
     IsExpired,
     Parse,
+    __version__,
     get_age,
     get_full_name,
     get_state,
@@ -15,6 +16,12 @@ from aamva_parser import (
     is_under_21,
     parse,
 )
+
+
+def test_package_version_is_non_empty_string() -> None:
+    assert isinstance(__version__, str)
+    assert len(__version__) > 0
+
 
 VALID_BARCODE = """
 @

@@ -26,7 +26,7 @@ class LicenseParser:
     def __init__(self, data: str) -> None:
         self._regex = Regex()
         self.data = self._clean_and_format_string(data)
-        self.field_parser: FieldParser = FieldParser(data)
+        self.field_parser: FieldParser = FieldParser(self.data)
 
     def _clean_and_format_string(self, data: str) -> str:
         data = data.replace("\u001e", "").replace("\r", "")

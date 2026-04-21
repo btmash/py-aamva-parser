@@ -67,9 +67,13 @@ The importable package name is **`aamva_parser`** (underscore).
 
 Creating a [GitHub Release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) runs **Publish to PyPI** (`.github/workflows/publish.yml`), which builds the sdist and wheel and uploads them with [OIDC trusted publishing](https://docs.pypi.org/trusted-publishers/).
 
+The **distribution version** comes from **Git** via [setuptools-scm](https://github.com/pypa/setuptools_scm): create the release from a tag whose name parses as a [PEP 440](https://peps.python.org/pep-0440/) version (for example `v0.2.0` or `0.2.0`). You do not bump a static `version` field in `pyproject.toml`.
+
 One-time PyPI setup for the **aamva-parser** project: **Manage** → **Publishing** → add a trusted publisher for this repository, workflow `publish.yml`, and environment **`pypi`** (the name used in the workflow).
 
 For a manual upload: `pip install build twine`, then `python -m build` and `twine upload dist/*`.
+
+For a dry run before the first production release, upload to [TestPyPI](https://test.pypi.org/) (separate project and credentials or trusted publisher): `twine upload --repository testpypi dist/*` after [configuring TestPyPI in `~/.pypirc`](https://packaging.python.org/en/latest/guides/using-testpypi/).
 
 ### Poetry
 
