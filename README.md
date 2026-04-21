@@ -8,6 +8,8 @@ Python library to parse **AAMVA PDF417** barcode payloads from US and Canadian d
 
 This project is a **Python port** of **[aamva-parser](https://github.com/joptimus/aamva-parser)** by [joptimus](https://github.com/joptimus), originally implemented in **TypeScript** for Node.js. Parsing logic, version-specific field maps, and helpers are intended to track that upstream project.
 
+The port was **produced with AI assistance** and **reviewed by a human** before publication.
+
 If you use the JavaScript package, see its [README](https://github.com/joptimus/aamva-parser/blob/main/README.md) for the canonical API and field documentation.
 
 **Repository:** [https://github.com/btmash/py-aamva-parser](https://github.com/btmash/py-aamva-parser)
@@ -22,11 +24,29 @@ The Python package uses **idiomatic `snake_case`** on the `License` object and i
 
 Behavior is aligned with the TypeScript port where possible. Enums are Python `str` enums with the same string values as in JS (for example `Gender.MALE` → `"Male"`).
 
+### `ParsedLicense` and `License` (for TypeScript users)
+
+In the [upstream npm package](https://github.com/joptimus/aamva-parser), **`ParsedLicense`** is a TypeScript **interface**: it describes the shape of the object returned by `parse()` (fields plus methods like `isExpired()`). **`License`** is the **class** that implements that interface.
+
+In Python there is **one** concrete type, the **`License`** dataclass, which is what `parse()` returns. **`ParsedLicense`** is exported as a [`typing.TypeAlias`](https://docs.python.org/3/library/typing.html#type-aliases) to `License`, so you can write the same style of annotations you would in TypeScript without learning a second runtime model:
+
+```python
+from aamva_parser import ParsedLicense, parse
+
+def audit_card(payload: str, record: ParsedLicense) -> None:
+    lic = parse(payload)
+    assert lic.is_acceptable() == record.is_acceptable()
+```
+
+At runtime, `isinstance(lic, License)` and `isinstance(lic, ParsedLicense)` are equivalent.
+
 ## Requirements
 
 - Python **3.10+**
 
 ## Installation
+
+The **PyPI / pip name** is `aamva-parser` (hyphen). The **import name** is `aamva_parser` (underscore): `import aamva_parser` or `from aamva_parser import parse`.
 
 **From PyPI** (when published):
 
@@ -73,7 +93,7 @@ After dependency changes, run `poetry lock`. Commit `poetry.lock` if you want re
 ### Parse a barcode
 
 ```python
-from aamva_parser import parse, get_version, is_expired, get_age, is_under_21, get_full_name
+from aamva_parser import ParsedLicense, parse, get_version, is_expired, get_age, is_under_21, get_full_name
 
 barcode_data = """
 @
@@ -152,6 +172,12 @@ lic = parser.parse()
 ```
 
 ## API
+
+The package exports **`License`** (concrete result type), **`ParsedLicense`** (same type, for annotations mirroring upstream TypeScript), enums, and **`LicenseParser`**. Module-level functions:
+
+Each helper such as `get_full_name(barcode)` or `is_acceptable(barcode)` runs **`parse(barcode)`** internally. For hot paths, build one **`LicenseParser`** and call **`parse()`** once, then read fields or call **`License`** methods.
+
+Deprecated **`Parse` / `GetVersion` / `IsExpired`** (PascalCase) live in **`aamva_parser.compat`** and are re-exported from the package root for npm parity; prefer snake_case.
 
 | Function | Returns | Description |
 | --- | --- | --- |
@@ -365,12 +391,17 @@ Tables are split so they fit typical viewports; the two halves are the same data
 
 ## Development
 
+Automated tests mirror the upstream Jest layout under `js-aamva-parser/tests/` (for example `regex.test.ts` → `tests/test_regex.py`, `indexApi.test.ts` → `tests/test_index_api.py`). Deprecated PascalCase helpers are implemented in `src/aamva_parser/compat.py`.
+
 ### pip and venv
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate   # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
+ruff check src tests
+ruff format --check src tests
+mypy
 pytest
 ```
 
@@ -380,10 +411,13 @@ From the repository root (Poetry 2.0+):
 
 ```bash
 poetry install -E dev
+poetry run ruff check src tests
+poetry run ruff format --check src tests
+poetry run mypy
 poetry run pytest
 ```
 
-Optional: `poetry shell`, then `pytest` without the `poetry run` prefix.
+Optional: `poetry shell`, then run the same commands without the `poetry run` prefix.
 
 ## License
 

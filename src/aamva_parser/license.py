@@ -1,14 +1,24 @@
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any
+from typing import Any, cast
 
-from aamva_parser.enums import EyeColor, Gender, HairColor, IssuingCountry, NameSuffix, Truncation
+from aamva_parser.enums import (
+    EyeColor,
+    Gender,
+    HairColor,
+    IssuingCountry,
+    NameSuffix,
+    Truncation,
+)
 
 
-@dataclass
+@dataclass(slots=True)
 class License:
+    """Decoded AAMVA PDF417 record (one card scan)."""
+
     first_name: str | None = None
     last_name: str | None = None
     middle_name: str | None = None
@@ -47,10 +57,13 @@ class License:
     weight: str | None = None
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> License:
+    def from_dict(cls, data: Mapping[str, object]) -> License:
         known = {f.name for f in cls.__dataclass_fields__.values()}
+        extra = set(data) - known
+        if extra:
+            raise TypeError(f"Unknown fields for {cls.__name__}: {sorted(extra)!s}")
         filtered = {k: v for k, v in data.items() if k in known}
-        return cls(**filtered)
+        return cls(**cast(dict[str, Any], filtered))
 
     def is_expired(self) -> bool:
         return self.expiration_date is not None and datetime.now() > self.expiration_date

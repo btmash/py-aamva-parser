@@ -2,36 +2,45 @@ from __future__ import annotations
 
 from datetime import date
 
-from aamva_parser.enums import EyeColor, Gender, HairColor, IssuingCountry, NameSuffix, Truncation
+from aamva_parser.enums import (
+    EyeColor,
+    Gender,
+    HairColor,
+    IssuingCountry,
+    NameSuffix,
+    Truncation,
+)
 from aamva_parser.license import License
+from aamva_parser.parsed_license import ParsedLicense
 from aamva_parser.parser import LicenseParser
 
 __all__ = [
+    "EyeColor",
+    "Gender",
+    "GetVersion",
+    "HairColor",
+    "IsExpired",
+    "IssuingCountry",
     "License",
     "LicenseParser",
-    "parse",
-    "get_version",
-    "is_expired",
-    "get_age",
-    "is_under_21",
-    "is_under_18",
-    "is_acceptable",
-    "get_full_name",
-    "get_state",
-    "is_cdl",
-    "Gender",
-    "EyeColor",
-    "HairColor",
-    "IssuingCountry",
-    "Truncation",
     "NameSuffix",
     "Parse",
-    "GetVersion",
-    "IsExpired",
+    "ParsedLicense",
+    "Truncation",
+    "get_age",
+    "get_full_name",
+    "get_state",
+    "get_version",
+    "is_acceptable",
+    "is_cdl",
+    "is_expired",
+    "is_under_18",
+    "is_under_21",
+    "parse",
 ]
 
 
-def parse(barcode: str) -> License:
+def parse(barcode: str) -> ParsedLicense:
     return LicenseParser(barcode).parse()
 
 
@@ -76,20 +85,13 @@ def get_full_name(barcode: str) -> str | None:
 
 
 def get_state(barcode: str) -> str | None:
-    return parse(barcode).state
+    s = parse(barcode).state
+    return s if s else None
 
 
 def is_cdl(barcode: str) -> bool:
     return parse(barcode).cdl_indicator == "1"
 
 
-def Parse(barcode: str) -> License:
-    return parse(barcode)
-
-
-def GetVersion(barcode: str) -> str | None:
-    return get_version(barcode)
-
-
-def IsExpired(barcode: str) -> bool:
-    return is_expired(barcode)
+# Deprecated PascalCase aliases (JavaScript parity); prefer snake_case above.
+from aamva_parser.compat import GetVersion, IsExpired, Parse

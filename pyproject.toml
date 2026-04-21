@@ -20,6 +20,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Typing :: Typed",
 ]
 
@@ -31,7 +32,7 @@ Issues = "https://github.com/btmash/py-aamva-parser/issues"
 Upstream = "https://github.com/joptimus/aamva-parser"
 
 [project.optional-dependencies]
-dev = ["pytest>=7.0"]
+dev = ["mypy>=1.8", "pytest>=7.0", "ruff>=0.8"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -41,3 +42,32 @@ aamva_parser = ["py.typed"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "-ra"
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = [
+  "E",   # pycodestyle errors
+  "F",   # Pyflakes
+  "I",   # isort
+  "UP",  # pyupgrade
+  "B",   # flake8-bugbear
+  "SIM", # flake8-simplify
+]
+
+[tool.ruff.lint.per-file-ignores]
+"src/aamva_parser/__init__.py" = ["E402"]
+
+[tool.mypy]
+python_version = "3.10"
+explicit_package_bases = true
+mypy_path = "src"
+packages = ["aamva_parser"]
+warn_return_any = true
+warn_unused_configs = true
+strict_optional = true
+show_error_codes = true
