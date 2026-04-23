@@ -12,28 +12,6 @@ The port was **produced with AI assistance** and **reviewed by a human** before 
 
 Supports AAMVA barcode versions **01–12** (CDS 2000–2025). Includes helpers for age checks, full name formatting, and CDL detection (v12).
 
-## Python vs JavaScript API
-
-The Python package uses **idiomatic `snake_case`** on the `License` object and in module-level helpers (for example `date_of_birth`, `is_cdl`, `get_full_name`). The npm package uses **camelCase** (`dateOfBirth`, `isCDL`, `getFullName`).
-
-Behavior is aligned with the TypeScript port where possible. Enums are Python `str` enums with the same string values as in JS (for example `Gender.MALE` → `"Male"`).
-
-### `ParsedLicense` and `License` (for TypeScript users)
-
-In the [upstream npm package](https://github.com/joptimus/aamva-parser), **`ParsedLicense`** is a TypeScript **interface**: it describes the shape of the object returned by `parse()` (fields plus methods like `isExpired()`). **`License`** is the **class** that implements that interface.
-
-In Python there is **one** concrete type, the **`License`** dataclass, which is what `parse()` returns. **`ParsedLicense`** is exported as a [`typing.TypeAlias`](https://docs.python.org/3/library/typing.html#type-aliases) to `License`, so you can write the same style of annotations you would in TypeScript without learning a second runtime model:
-
-```python
-from aamva_parser import ParsedLicense, parse
-
-def audit_card(payload: str, record: ParsedLicense) -> None:
-    lic = parse(payload)
-    assert lic.is_acceptable() == record.is_acceptable()
-```
-
-At runtime, `isinstance(lic, License)` and `isinstance(lic, ParsedLicense)` are equivalent.
-
 ## Requirements
 
 - Python **3.10+**
@@ -55,51 +33,28 @@ pip install .
 pip install -e ".[dev]"   # editable, with dev dependencies
 ```
 
-The importable package name is **`aamva_parser`** (underscore).
+**With Poetry** (2.0+ recommended; the package is [PEP 621](https://peps.python.org/pep-0621/) metadata with setuptools as the build backend):
 
-## Publishing to PyPI
-
-Creating a [GitHub Release](https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository) runs **Publish to PyPI** (`.github/workflows/publish.yml`), which builds the sdist and wheel and uploads them with [OIDC trusted publishing](https://docs.pypi.org/trusted-publishers/).
-
-The **distribution version** comes from **Git** via [setuptools-scm](https://github.com/pypa/setuptools_scm): create the release from a tag whose name parses as a [PEP 440](https://peps.python.org/pep-0440/) version (for example `v0.2.0` or `0.2.0`). You do not bump a static `version` field in `pyproject.toml`.
-
-One-time PyPI setup for the **aamva-parser** project: **Manage** → **Publishing** → add a trusted publisher for this repository, workflow `publish.yml`, and environment **`pypi`** (the name used in the workflow).
-
-For a manual upload: `pip install build twine`, then `python -m build` and `twine upload dist/*`.
-
-For a dry run before the first production release, upload to [TestPyPI](https://test.pypi.org/) (separate project and credentials or trusted publisher): `twine upload --repository testpypi dist/*` after [configuring TestPyPI in `~/.pypirc`](https://packaging.python.org/en/latest/guides/using-testpypi/).
-
-### Poetry
-
-This repo uses **[PEP 621](https://peps.python.org/pep-0621/)** metadata in `pyproject.toml` with **setuptools** as the build backend. Use **[Poetry 2.0+](https://python-poetry.org/)** so Poetry reads that layout without a legacy `[tool.poetry]` section.
-
-**Add the library to another project** (PyPI, local path, or Git):
+From PyPI:
 
 ```bash
 poetry add aamva-parser
-poetry add ../py-aamva-parser
+```
+
+From a local path or Git URL:
+
+```bash
 poetry add git+https://github.com/btmash/py-aamva-parser.git
 ```
 
-**Develop this repo** (clone, install project + `dev` extra, run tests):
-
-```bash
-git clone https://github.com/btmash/py-aamva-parser.git
-cd py-aamva-parser
-poetry install -E dev
-poetry run pytest
-```
-
-Use `poetry shell` to activate the environment, then run commands without `poetry run`. The `-E dev` flag installs the optional **`dev`** extra from `pyproject.toml` (development tools such as `pytest`, `ruff`, `mypy`, `build`, and `twine`).
-
-After dependency changes, run `poetry lock`. Commit `poetry.lock` if you want reproducible installs for Poetry users.
+The importable package name is **`aamva_parser`** (underscore).
 
 ## Usage
 
 ### Parse a barcode
 
 ```python
-from aamva_parser import ParsedLicense, parse, get_version, is_expired, get_age, is_under_21, get_full_name
+from aamva_parser import parse, get_version, is_expired, get_age, is_under_21, get_full_name
 
 barcode_data = """
 @
@@ -151,10 +106,39 @@ expired = is_expired(barcode_data)
 version = get_version(barcode_data)  # "08"
 ```
 
-### Typing and enums
+### Jurisdiction, CDL, and “acceptable” checks
 
 ```python
-from aamva_parser import parse, License, Gender, EyeColor
+from aamva_parser import get_state, is_cdl, is_acceptable, is_under_18
+
+state = get_state(barcode_data)       # e.g. "CA", or None
+cdl = is_cdl(barcode_data)             # True when v12 CDL indicator is set
+ok = is_acceptable(barcode_data)      # issued, not expired, required fields present
+minor = is_under_18(barcode_data)     # False if 18+ or no DOB
+```
+
+### Instance methods on `License`
+
+After `lic = parse(...)`, you can call methods on the same object instead of re-parsing:
+
+```python
+lic = parse(barcode_data)
+
+if lic.is_expired():
+    ...
+if lic.has_been_issued() and lic.is_acceptable():
+    ...
+```
+
+### Types, annotations, and enums
+
+`parse()` returns a **`License`** dataclass. **`ParsedLicense`** is a [`typing.TypeAlias`](https://docs.python.org/3/library/typing.html#type-aliases) to `License` for annotations; at runtime `isinstance(lic, License)` and `isinstance(lic, ParsedLicense)` are equivalent.
+
+```python
+from aamva_parser import License, ParsedLicense, Gender, EyeColor, parse
+
+def summarize(card: ParsedLicense) -> str:
+    return f"{card.first_name} {card.last_name} ({card.state})"
 
 lic: License = parse(barcode_data)
 
@@ -163,6 +147,14 @@ if lic.gender == Gender.MALE:
 
 if lic.eye_color == EyeColor.GREEN:
     print("Green eyes")
+```
+
+### Package version
+
+```python
+import aamva_parser
+
+print(aamva_parser.__version__)
 ```
 
 ### `LicenseParser` class
@@ -177,13 +169,15 @@ version = parser.parse_version()
 lic = parser.parse()
 ```
 
+Each module-level helper (`get_age`, `is_expired`, …) parses the string again. Prefer **`LicenseParser`** when you need the version, a **`License`**, and several helpers, so you pay for one parse.
+
 ## API
 
-The package exports **`License`** (concrete result type), **`ParsedLicense`** (same type, for annotations mirroring upstream TypeScript), enums, and **`LicenseParser`**. Module-level functions:
+The package exports **`License`** (concrete result type), **`ParsedLicense`** (type alias to `License` for annotations), enums, and **`LicenseParser`**. Module-level functions:
 
 Each helper such as `get_full_name(barcode)` or `is_acceptable(barcode)` runs **`parse(barcode)`** internally. For hot paths, build one **`LicenseParser`** and call **`parse()`** once, then read fields or call **`License`** methods.
 
-Deprecated **`Parse` / `GetVersion` / `IsExpired`** (PascalCase) live in **`aamva_parser.compat`** and are re-exported from the package root for npm parity; prefer snake_case.
+Deprecated **`Parse` / `GetVersion` / `IsExpired`** (PascalCase) are re-exported from the package root; prefer snake_case.
 
 | Function | Returns | Description |
 | --- | --- | --- |
@@ -198,7 +192,7 @@ Deprecated **`Parse` / `GetVersion` / `IsExpired`** (PascalCase) live in **`aamv
 | `get_state(barcode_data)` | `str \| None` | Jurisdiction (e.g. `"CA"`). |
 | `is_cdl(barcode_data)` | `bool` | CDL indicator set (v12 / CDS 2025). |
 
-### Deprecated aliases (JS compatibility)
+### Deprecated aliases
 
 | Deprecated | Use instead |
 | --- | --- |
@@ -209,7 +203,7 @@ Deprecated **`Parse` / `GetVersion` / `IsExpired`** (PascalCase) live in **`aamv
 ### `License` methods
 
 - `is_expired()` — compare `expiration_date` to the current time.
-- `has_been_issued()` — `True` if `issue_date` is in the past.
+- `has_been_issued()` — `True` if `issue_date` is set and the current time is after it.
 - `is_acceptable()` — stricter checklist (name, address, dates, document ID, etc.).
 
 ## Supported fields (`License`)
