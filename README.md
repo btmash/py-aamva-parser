@@ -10,12 +10,6 @@ This project is a **Python port** of **[aamva-parser](https://github.com/joptimu
 
 The port was **produced with AI assistance** and **reviewed by a human** before publication.
 
-If you use the JavaScript package, see its [README](https://github.com/joptimus/aamva-parser/blob/main/README.md) for the canonical API and field documentation.
-
-**Repository:** [https://github.com/btmash/py-aamva-parser](https://github.com/btmash/py-aamva-parser)
-
-**Copyright:** Ashok Modi (see [`LICENSE`](LICENSE)). **GitHub:** [@btmash](https://github.com/btmash).
-
 Supports AAMVA barcode versions **01–12** (CDS 2000–2025). Includes helpers for age checks, full name formatting, and CDL detection (v12).
 
 ## Python vs JavaScript API
@@ -433,7 +427,7 @@ Optional: `poetry shell`, then run the same commands without the `poetry run` pr
 
 ## License
 
-This project is released under the **ISC License**. The copyright notice uses the author's legal name; see the [`LICENSE`](LICENSE) file. Source code and issues live under GitHub user [**btmash**](https://github.com/btmash).
+ISC
 
 ## Credits
 
