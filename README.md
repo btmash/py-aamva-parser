@@ -1,7 +1,7 @@
 # py-aamva-parser
 
 [![PyPI version](https://img.shields.io/pypi/v/aamva-parser.svg)](https://pypi.org/project/aamva-parser/)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/aamva-parser.svg)](https://pypi.org/project/aamva-parser/)
 [![Tests](https://github.com/btmash/py-aamva-parser/actions/workflows/ci.yml/badge.svg)](https://github.com/btmash/py-aamva-parser/actions/workflows/ci.yml)
 [![Typed](https://img.shields.io/badge/Typed-py.typed-blue)](https://github.com/btmash/py-aamva-parser)
 [![License: ISC](https://img.shields.io/badge/License-ISC-green.svg)](https://opensource.org/licenses/ISC)
