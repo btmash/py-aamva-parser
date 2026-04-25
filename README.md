@@ -1,8 +1,10 @@
 # py-aamva-parser
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![PyPI version](https://img.shields.io/pypi/v/aamva-parser.svg)](https://pypi.org/project/aamva-parser/)
 [![License: ISC](https://img.shields.io/badge/License-ISC-green.svg)](https://opensource.org/licenses/ISC)
 [![Typed](https://img.shields.io/badge/Typed-py.typed-blue)](https://github.com/btmash/py-aamva-parser)
+[![Tests](https://github.com/btmash/py-aamva-parser/actions/workflows/ci.yml/badge.svg)](https://github.com/btmash/py-aamva-parser/actions/workflows/ci.yml)
 
 Python library to parse **AAMVA PDF417** barcode payloads from US and Canadian driver's licenses and ID cards.
 
